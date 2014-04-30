@@ -458,3 +458,6 @@ ByteStr * HexString_To_Array ( Byte * hexes ) {
   return out;
 }
 
+void CBC_Forward ( Byte iv[], Byte pt[], Byte key[] ) {
+}
+
