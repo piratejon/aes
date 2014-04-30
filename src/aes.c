@@ -400,6 +400,8 @@ void InvCipher ( Byte input_stream[], Byte key_stream[] ) {
 
   StreamToBlock ( input_stream, &state );
 
+  dumpstate ( "ainput", &state );
+
   KeyExpansion ( key_stream, w );
 
   AddRoundKey ( &state, w + Nr[Mode] * Nb[Mode] );
@@ -415,8 +417,44 @@ void InvCipher ( Byte input_stream[], Byte key_stream[] ) {
   InvSubBytes ( &state );
   AddRoundKey ( &state, w + i * Nb[Mode] );
 
-  dumpstate ( "iinput", &state );
+  dumpstate ( "binput", &state );
 
   BlockToStream ( &state, input_stream );
+}
+
+Byte char_to_nibble ( Byte hex ) {
+  if ( hex >= 'a' && hex <= 'f' ) return hex - 'a' + 0xa;
+  if ( hex >= 'A' && hex <= 'F' ) return hex - 'A' + 0xa;
+  if ( hex >= '0' && hex <= '9' ) return hex - '0';
+  return 0;
+}
+
+void free_bytestr ( ByteStr * out ) {
+  free ( out->raw );
+  free ( out );
+}
+
+ByteStr * HexString_To_Array ( Byte * hexes ) {
+  int i;
+  ByteStr * out = NULL;
+
+  for ( i = 0; hexes[i]; i += 1 );
+
+  out = malloc(sizeof(*out));
+  if ( i & 1 ) out->length = (i/2) + 1;
+  else out->length = i/2;
+  out->raw = malloc(sizeof(*(out->raw))*i);
+
+  printf("len: %d, out: %p, out->raw: %p\n", i, out, out->raw);
+
+  for ( i = 0; hexes[i]; i += 2 ) {
+    out->raw[i/2] = (char_to_nibble(hexes[i]) << 4);
+
+    if ( hexes[i+1] ) {
+      out->raw[i/2] |= char_to_nibble(hexes[i+1]);
+    }
+  }
+
+  return out;
 }
 

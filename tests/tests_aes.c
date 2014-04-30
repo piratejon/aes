@@ -600,6 +600,123 @@ static void test_InvCipher ( void )
   }
 }
 
+static void test_CBC_Mode ( void )
+{
+  Byte initialization_vector[] = {
+    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+    0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff
+  };
+
+  Byte multi_block_message[] = {
+    "this is a top-secret message that fits into many blocks. I don't know how many. At least 4."
+  };
+
+  Byte output[96];
+
+  Byte encryption_key[] = { // first 16 bytes of sha256("This is a top-secret key.")
+    0x6b, 0x0e, 0xba, 0x80, 0x5a, 0x3d, 0xb8, 0x2b,
+    0x2f, 0x36, 0x9d, 0x14, 0x1e, 0x41, 0x8c, 0x21
+  };
+
+  // SetMode ( FIPS_AES_128 );
+  // Cipher ( input_stream_128, key_stream_128 );
+}
+
+static void test_InconteamVectors ( void ) {
+  Byte * key_ecb_128_enc = "2b7e151628aed2a6abf7158809cf4f3c";
+
+  Byte * tv_ecb_128_enc[] = {
+    "6bc1bee22e409f96e93d7e117393172a",
+    "ae2d8a571e03ac9c9eb76fac45af8e51",
+    "30c81c46a35ce411e5fbc1191a0a52ef",
+    "f69f2445df4f9b17ad2b417be66c3710",
+  };
+
+  Byte * ct_ecb_128_enc[] = {
+    "3ad77bb40d7a3660a89ecaf32466ef97",
+    "f5d3d58503b9699de785895a96fdbaaf",
+    "43b1cd7f598ece23881b00e3ed030688",
+    "7b0c785e27e8ad3f8223207104725dd4",
+  };
+
+  Byte * key_ecb_128_dec = "2b7e151628aed2a6abf7158809cf4f3c";
+
+  Byte * tv_ecb_128_dec[] = {
+    "3ad77bb40d7a3660a89ecaf32466ef97",
+    "f5d3d58503b9699de785895a96fdbaaf",
+    "43b1cd7f598ece23881b00e3ed030688",
+    "7b0c785e27e8ad3f8223207104725dd4",
+  };
+
+  Byte * pt_ecb_128_dec[] = {
+    "6bc1bee22e409f96e93d7e117393172a",
+    "ae2d8a571e03ac9c9eb76fac45af8e51",
+    "30c81c46a35ce411e5fbc1191a0a52ef",
+    "f69f2445df4f9b17ad2b417be66c3710",
+  };
+
+  int i, j;
+
+  ByteStr * key, * ct, * tv;
+
+  SetMode(FIPS_AES_128);
+  key = HexString_To_Array(key_ecb_128_enc);
+  for ( i = 0; i < 4; i += 1 ) {
+    tv = HexString_To_Array(tv_ecb_128_enc[i]);
+    ct = HexString_To_Array(ct_ecb_128_enc[i]);
+
+    Cipher ( tv->raw, key->raw );
+
+    for ( j = 0; j < tv->length; j += 1 ) {
+      ASSERT ( tv->raw[j] == ct->raw[j], "Wrong ciphertext." );
+    }
+
+    free_bytestr ( ct );
+    free_bytestr ( tv );
+  }
+  free_bytestr(key);
+
+  SetMode(FIPS_AES_128);
+  key = HexString_To_Array(key_ecb_128_dec);
+
+  for ( i = 0; i < 4; i += 1 ) {
+    tv = HexString_To_Array(tv_ecb_128_dec[i]);
+    ct = HexString_To_Array(pt_ecb_128_dec[i]);
+
+    InvCipher ( tv->raw, key->raw );
+
+    for ( j = 0; j < tv->length; j += 1 ) {
+      ASSERT ( tv->raw[j] == ct->raw[j], "Wrong plaintext." );
+    }
+
+    free_bytestr ( ct );
+    free_bytestr ( tv );
+  }
+  free_bytestr(key);
+
+}
+
+static void test_HexString_To_Array ( void )
+{
+  Byte * str = "6bc1bee22e409f96e93d7e117393172a";
+  ByteStr * out;
+  Byte hex[] = { 0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a };
+
+  int i;
+
+  out = HexString_To_Array(str);
+
+  ASSERT ( out != NULL, "wtf out" );
+
+  ASSERT ( out->length == 16, "Wrong length of ByteStr" );
+
+  for ( i = 0; i < sizeof(hex); i += 1 ) {
+    ASSERT ( hex[i] == out->raw[i], "Wrong byte" );
+  }
+
+  free_bytestr(out);
+}
+
 void do_tests ( void )
 {
   TEST ( sanity_check_zero );
@@ -616,5 +733,8 @@ void do_tests ( void )
   TEST ( test_ShiftRows );
   TEST ( test_Cipher );
   TEST ( test_InvCipher );
+  TEST ( test_InconteamVectors );
+  TEST ( test_CBC_Mode );
+  TEST ( test_HexString_To_Array );
 }
 
