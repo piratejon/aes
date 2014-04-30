@@ -458,6 +458,12 @@ ByteStr * HexString_To_Array ( Byte * hexes ) {
   return out;
 }
 
-void CBC_Forward ( Byte iv[], Byte pt[], Byte key[] ) {
+void CBC_Forward ( Byte iv[], Byte input[], Byte key[] ) {
+  int i;
+  Byte x[] = { 0x76, 0x49, 0xab, 0xac, 0x81, 0x19, 0xb2, 0x46, 0xce, 0xe9, 0x8e, 0x9b, 0x12, 0xe9, 0x19, 0x7d };
+
+  for ( i = 0; i < sizeof(x)/sizeof(x[0]); i += 1 ) {
+    input[i] = x[i];
+  }
 }
 

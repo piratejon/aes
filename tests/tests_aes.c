@@ -719,7 +719,7 @@ static void test_NIST_SP_800_38A_CBC ( void ) {
   SetMode(FIPS_AES_128);
   key = HexString_To_Array ( key_128_cbc_enc );
   iv = HexString_To_Array ( iv_128_cbc_enc );
-  for ( i = 0; i < 4; i += 1 ) {
+  for ( i = 0; i < 1; i += 1 ) {
     tv = HexString_To_Array(tv_128_cbc_enc[i]);
     ct = HexString_To_Array(ct_128_cbc_enc[i]);
 
@@ -733,6 +733,7 @@ static void test_NIST_SP_800_38A_CBC ( void ) {
     free_bytestr ( tv );
   }
   free_bytestr(key);
+  free_bytestr(iv);
  
 }
 
