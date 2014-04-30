@@ -622,7 +622,7 @@ static void test_CBC_Mode ( void )
   // Cipher ( input_stream_128, key_stream_128 );
 }
 
-static void test_InconteamVectors ( void ) {
+static void test_NIST_SP_800_38A ( void ) {
 
   Byte * key_ecb_128_enc = "2b7e151628aed2a6abf7158809cf4f3c";
   Byte * tv_ecb_128_enc[] = {
@@ -854,7 +854,7 @@ void do_tests ( void )
   TEST ( test_ShiftRows );
   TEST ( test_Cipher );
   TEST ( test_InvCipher );
-  TEST ( test_InconteamVectors );
+  TEST ( test_NIST_SP_800_38A );
   TEST ( test_CBC_Mode );
   TEST ( test_HexString_To_Array );
 }
