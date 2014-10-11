@@ -1107,10 +1107,10 @@ static void test_HexString_To_Array ( void )
 }
 
 static void test_NIST_SP_800_38A_CFB1_Enc_128 ( void ) {
-  char * key = "2b7e151628aed2a6abf7158809cf4f3c";
-  char * iv = "000102030405060708090a0b0c0d0e0f";
+  char * key_cfb1_enc_128 = "2b7e151628aed2a6abf7158809cf4f3c";
+  char * iv_cfb1_enc_128 = "000102030405060708090a0b0c0d0e0f";
 
-  char * input_block[] = {
+  char * input_block_cfb1_enc_128[] = {
     "000102030405060708090a0b0c0d0e0f",
     "00020406080a0c0e10121416181a1c1e",
     "0004080c1014181c2024282c3034383d",
@@ -1129,7 +1129,7 @@ static void test_NIST_SP_800_38A_CFB1_Enc_128 ( void ) {
     "8101820283038404850586068707b459",
   };
 
-  char * output_block[] = {
+  char * output_block_cfb1_enc_128[] = {
     "50fe67cc996d32b6da0937e99bafec60",
     "19cf576c7596e702f298b35666955c79",
     "59e17759acd02b801fa321ea059e331f",
@@ -1148,13 +1148,43 @@ static void test_NIST_SP_800_38A_CFB1_Enc_128 ( void ) {
     "7fe16252b338bc4de3725c4156dfed20",
   };
 
-  char * pt[] = { // only use lsb
+  char * pt_cfb1_enc_128[] = { // only use lsb
     "0","01","01","0","01","0","01","01","01","01","0","0","0","0","0","01"
   };
 
-  char * ct[] = { // only use lsb
+  char * ct_cfb1_enc_128[] = { // only use lsb
     "0","01","01","0","01","0","0","0","01","0","01","01","0","0","01","01",
   };
+
+  int i;
+  ByteStr * key, * iv, *ct[16], *out[16];
+
+  key = HexString_To_Array ( key_cfb1_enc_128 );
+  iv = HexString_To_Array ( iv_cfb1_enc_128 );
+
+  for ( i = 0; i < 16; i += 1 ) {
+    ct[i] = HexString_To_Array ( ct_cfb1_enc_128[i] );
+  }
+  for ( i = 0; i < 16; i += 1 ) {
+    out[i] = HexString_To_Array ( output_block_cfb1_enc_128[i] );
+  }
+
+  SetMode(FIPS_AES_128);
+  Cipher(iv->raw, key->raw);
+  for ( i = 0; i < 16; i += 1 ) ASSERT(iv->raw[i] == out[0]->raw[i], "Wrong output from CFB1 cipher.");
+
+  // ByteCopy ( bip->raw, iv->raw, 16 );
+
+  for ( i = 0; i < 16; i += 1 ) {
+    free_bytestr(ct[i]);
+  }
+
+  for ( i = 0; i < 16; i += 1 ) {
+    free_bytestr(out[i]);
+  }
+
+  free_bytestr(key);
+  free_bytestr(iv);
 }
 
 void do_tests ( void )
