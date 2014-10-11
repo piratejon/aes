@@ -1094,6 +1094,16 @@ static void test_HexString_To_Array ( void )
   }
 
   free_bytestr(out);
+ 
+  out = HexString_To_Array("1");
+  ASSERT ( out->length == 1, "Wrong length on single byte hex string." );
+  ASSERT ( out->raw[0] == 0x10, "Wrong value on single byte hex string." );
+  free_bytestr ( out );
+ 
+  out = HexString_To_Array("0");
+  ASSERT ( out->length == 1, "Wrong length on single byte hex string." );
+  ASSERT ( out->raw[0] == 0x00, "Wrong value on single byte hex string." );
+  free_bytestr ( out );
 }
 
 static void test_NIST_SP_800_38A_CFB1_Enc_128 ( void ) {
@@ -1145,12 +1155,6 @@ static void test_NIST_SP_800_38A_CFB1_Enc_128 ( void ) {
   char * ct[] = { // only use lsb
     "0","1","1","0","1","0","0","0","1","0","1","1","0","0","1","1",
   };
-
-  ByteStr * lol = HexString_To_Array(pt[0]);
-  ASSERT ( lol->length == 1, "Wrong length on single byte hex string." );
-  ASSERT ( lol->raw[0] == 0x00, "Wrong value on single byte hex string." );
-
-  free_bytestr ( lol );
 }
 
 void do_tests ( void )
