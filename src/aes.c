@@ -497,19 +497,19 @@ void CBC_Forward ( ByteStr * iv, ByteStr * key, ByteStr * pt_in[], ByteStr * ct_
   Cipher ( ct_out[i]->raw, key->raw );
 }
 
-void CBC_Reverse ( ByteStr * iv, ByteStr * key, ByteStr * ct[], ByteStr * pt[], int n ) {
+void CBC_Reverse ( ByteStr * iv, ByteStr * key, ByteStr * ct_in[], ByteStr * pt_out[], int n ) {
   int i;
 
   for ( i = 0; i < n; i += 1 ) {
-    ByteCopy ( pt[i]->raw, ct[i]->raw, 16 );
+    ByteCopy ( pt_out[i]->raw, ct_in[i]->raw, 16 );
   }
 
-  InvCipher ( pt[0]->raw, key->raw );
-  XorString ( pt[0]->raw, iv->raw, 16 );
+  InvCipher ( pt_out[0]->raw, key->raw );
+  XorString ( pt_out[0]->raw, iv->raw, 16 );
 
   for ( i = 1; i < n; i += 1 ) {
-    InvCipher ( pt[i]->raw, key->raw );
-    XorString ( pt[i]->raw, ct[i-1]->raw, 16 );
+    InvCipher ( pt_out[i]->raw, key->raw );
+    XorString ( pt_out[i]->raw, ct_in[i-1]->raw, 16 );
   }
 }
 

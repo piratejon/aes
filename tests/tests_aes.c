@@ -600,28 +600,6 @@ static void test_InvCipher ( void )
   }
 }
 
-static void test_CBC_Mode ( void )
-{
-  Byte initialization_vector[] = {
-    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-    0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff
-  };
-
-  Byte multi_block_message[] = {
-    "this is a top-secret message that fits into many blocks. I don't know how many. At least 4."
-  };
-
-  Byte output[96];
-
-  Byte encryption_key[] = { // first 16 bytes of sha256("This is a top-secret key.")
-    0x6b, 0x0e, 0xba, 0x80, 0x5a, 0x3d, 0xb8, 0x2b,
-    0x2f, 0x36, 0x9d, 0x14, 0x1e, 0x41, 0x8c, 0x21
-  };
-
-  // SetMode ( FIPS_AES_128 );
-  // Cipher ( input_stream_128, key_stream_128 );
-}
-
 static void test_NIST_SP_800_38A_CBC_Enc_128 ( void ) {
   char * key_128_cbc_enc = "2b7e151628aed2a6abf7158809cf4f3c";
   char * iv_128_cbc_enc = "000102030405060708090a0b0c0d0e0f";
