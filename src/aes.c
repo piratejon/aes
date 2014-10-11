@@ -433,7 +433,7 @@ void free_bytestr ( ByteStr * out ) {
   free ( out );
 }
 
-ByteStr * HexString_To_Array ( Byte * hexes ) {
+ByteStr * HexString_To_Array ( char * hexes ) {
   int i;
   ByteStr * out = NULL;
 

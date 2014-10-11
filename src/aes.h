@@ -27,7 +27,7 @@ void SetMode ( int );
 void Cipher ( Byte [], Byte [] );
 void InvCipher ( Byte [], Byte [] );
 void CBC_Forward ( ByteStr *, ByteStr *, ByteStr * [], ByteStr * [], int );
-ByteStr * HexString_To_Array ( Byte * );
+ByteStr * HexString_To_Array ( char * );
 void XorString ( Byte *, Byte *, int );
 
 void free_bytestr ( ByteStr * );
