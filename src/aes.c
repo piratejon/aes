@@ -1,10 +1,9 @@
 
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
 #include "aes_test.h"
-
-#include "aesutils.h"
 #include "aes.h"
 
 static const Byte sbox[256] = {
@@ -460,6 +459,7 @@ ByteStr * HexString_To_Array ( Byte * hexes ) {
 
 void XorString ( Byte * dst, Byte * src, int n ) {
   int b;
+
   for ( b = 0; b < n; b += 1 ) {
     dst[b] ^= src[b];
   }
@@ -468,8 +468,6 @@ void XorString ( Byte * dst, Byte * src, int n ) {
 void CBC_Forward ( ByteStr * iv, ByteStr * key, ByteStr * pt[], int n ) {
   int i;
 
-  // from wikipedia the first step is to encrypt the IV with the key
-  // is that what SP800 does? no, it says xor plaintext with IV
   for ( i = 0; i < n; i += 1 ) {
     XorString ( iv->raw, pt[i]->raw, 16 );
     Cipher ( iv->raw, key->raw );

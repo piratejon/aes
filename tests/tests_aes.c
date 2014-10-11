@@ -622,198 +622,95 @@ static void test_CBC_Mode ( void )
   // Cipher ( input_stream_128, key_stream_128 );
 }
 
-static void test_NIST_SP_800_38A_CBC_128 ( void ) {
-  Byte * key_128_cbc_enc = "2b7e151628aed2a6abf7158809cf4f3c";
-  Byte * iv_128_cbc_enc = "000102030405060708090a0b0c0d0e0f";
-  Byte * tv_128_cbc_enc[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
-  };
-  Byte * ct_128_cbc_enc[] = {
-    "7649abac8119b246cee98e9b12e9197d",
-    "5086cb9b507219ee95db113a917678b2",
-    "73bed6b8e3c1743b7116e69e22229516",
-    "3ff1caa1681fac09120eca307586e1a7",
-  };
-
-  int i, b;
-  ByteStr * key, * ct, * iv;
-  ByteStr * pt[4];
-
-  SetMode(FIPS_AES_128);
-  key = HexString_To_Array ( key_128_cbc_enc );
-  iv = HexString_To_Array ( iv_128_cbc_enc );
-
-  for ( i = 0; i < 4; i += 1 ) {
-    pt[i] = HexString_To_Array ( tv_128_cbc_enc[i] );
-  }
-
-  CBC_Forward(iv, key, pt, 4);
-
-  for ( i = 0; i < 4; i += 1 ) {
-    free_bytestr(pt[i]);
-  }
-
-  // ct_128_cbc_enc
-  ct = HexString_To_Array ( ct_128_cbc_enc[3] );
-
-  for ( b = 0; b < ct->length; b += 1 ) {
-    ASSERT ( iv->raw[b] == ct->raw[b], "Wrong ciphertext." );
-  }
-
-  free_bytestr(key);
-  free_bytestr(iv);
-  free_bytestr(ct);
-}
-
-static void test_NIST_SP_800_38A_CBC_Short ( void ) {
-  Byte * key_128_cbc_enc = "2b7e151628aed2a6abf7158809cf4f3c";
-  Byte * iv_128_cbc_enc = "000102030405060708090a0b0c0d0e0f";
-  Byte * tv_128_cbc_enc[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
-  };
-  Byte * ct_128_cbc_enc[] = {
-    "7649abac8119b246cee98e9b12e9197d",
-    "5086cb9b507219ee95db113a917678b2",
-    "73bed6b8e3c1743b7116e69e22229516",
-    "3ff1caa1681fac09120eca307586e1a7",
-  };
-
-  int i, b;
-  ByteStr * key, * ct, * iv;
-  ByteStr * pt[4];
-
-  SetMode(FIPS_AES_128);
-  key = HexString_To_Array ( key_128_cbc_enc );
-  iv = HexString_To_Array ( iv_128_cbc_enc );
-
-  for ( i = 0; i < 4; i += 1 ) {
-    pt[i] = HexString_To_Array ( tv_128_cbc_enc[i] );
-  }
-
-  XorString ( iv->raw, pt[0]->raw, 16 );
-  Cipher(iv->raw, key->raw);
-
-  XorString ( iv->raw, pt[1]->raw, 16 );
-  Cipher(iv->raw, key->raw);
-
-  XorString ( iv->raw, pt[2]->raw, 16 );
-  Cipher(iv->raw, key->raw);
-
-  XorString ( iv->raw, pt[3]->raw, 16 );
-  Cipher(iv->raw, key->raw);
-
-  for ( i = 0; i < 4; i += 1 ) {
-    free_bytestr(pt[i]);
-  }
-
-  // ct_128_cbc_enc
-  ct = HexString_To_Array ( ct_128_cbc_enc[3] );
-
-  for ( b = 0; b < ct->length; b += 1 ) {
-    ASSERT ( iv->raw[b] == ct->raw[b], "Wrong ciphertext." );
-  }
-
-  free_bytestr(key);
-  free_bytestr(iv);
-  free_bytestr(ct);
-
-}
-
 static void test_NIST_SP_800_38A_CBC ( void ) {
-  Byte * key_128_cbc_enc = "2b7e151628aed2a6abf7158809cf4f3c";
-  Byte * iv_128_cbc_enc = "000102030405060708090a0b0c0d0e0f";
+  Byte * key_128_cbc_enc = (Byte*)"2b7e151628aed2a6abf7158809cf4f3c";
+  Byte * iv_128_cbc_enc = (Byte*)"000102030405060708090a0b0c0d0e0f";
   Byte * tv_128_cbc_enc[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a",
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51",
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef",
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710",
   };
   Byte * ct_128_cbc_enc[] = {
-    "7649abac8119b246cee98e9b12e9197d",
-    "5086cb9b507219ee95db113a917678b2",
-    "73bed6b8e3c1743b7116e69e22229516",
-    "3ff1caa1681fac09120eca307586e1a7",
+    (Byte*)"7649abac8119b246cee98e9b12e9197d",
+    (Byte*)"5086cb9b507219ee95db113a917678b2",
+    (Byte*)"73bed6b8e3c1743b7116e69e22229516",
+    (Byte*)"3ff1caa1681fac09120eca307586e1a7",
   };
 
-  Byte * key_128_cbc_dec = "2b7e151628aed2a6abf7158809cf4f3c";
-  Byte * iv_128_cbc_dec = "000102030405060708090a0b0c0d0e0f";
+  Byte * key_128_cbc_dec = (Byte*)"2b7e151628aed2a6abf7158809cf4f3c";
+  Byte * iv_128_cbc_dec = (Byte*)"000102030405060708090a0b0c0d0e0f";
   Byte * tv_128_cbc_dec[] = {
-    "7649abac8119b246cee98e9b12e9197d",
-    "5086cb9b507219ee95db113a917678b2",
-    "73bed6b8e3c1743b7116e69e22229516",
-    "3ff1caa1681fac09120eca307586e1a7",
+    (Byte*)"7649abac8119b246cee98e9b12e9197d",
+    (Byte*)"5086cb9b507219ee95db113a917678b2",
+    (Byte*)"73bed6b8e3c1743b7116e69e22229516",
+    (Byte*)"3ff1caa1681fac09120eca307586e1a7",
   };
   Byte * ct_128_cbc_dec[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710", 
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a",
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51",
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef",
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710", 
   };
 
-  Byte * key_192_cbc_enc = "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
-  Byte * iv_192_cbc_enc = "000102030405060708090a0b0c0d0e0f";
+  Byte * key_192_cbc_enc = (Byte*)"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
+  Byte * iv_192_cbc_enc = (Byte*)"000102030405060708090a0b0c0d0e0f";
   Byte * tv_193_cbc_enc[] = {
-    "6bc1bee22e409f96e93d7e117393172a", 
-    "ae2d8a571e03ac9c9eb76fac45af8e51", 
-    "30c81c46a35ce411e5fbc1191a0a52ef", 
-    "f69f2445df4f9b17ad2b417be66c3710", 
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a", 
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51", 
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef", 
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710", 
   };
   Byte * ct_192_cbc_enc[] = {
-    "4f021db243bc633d7178183a9fa071e8",
-    "b4d9ada9ad7dedf4e5e738763f69145a", 
-    "571b242012fb7ae07fa9baac3df102e0", 
-    "08b0e27988598881d920a9e64f5615cd",
+    (Byte*)"4f021db243bc633d7178183a9fa071e8",
+    (Byte*)"b4d9ada9ad7dedf4e5e738763f69145a", 
+    (Byte*)"571b242012fb7ae07fa9baac3df102e0", 
+    (Byte*)"08b0e27988598881d920a9e64f5615cd",
   };
 
-  Byte * key_192_cbc_dec = "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
-  Byte * iv_192_cbc_dec = "000102030405060708090a0b0c0d0e0f";
+  Byte * key_192_cbc_dec = (Byte*)"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
+  Byte * iv_192_cbc_dec = (Byte*)"000102030405060708090a0b0c0d0e0f";
   Byte * tv_192_cbc_dec[] = {
-  "4f021db243bc633d7178183a9fa071e8",
-  "b4d9ada9ad7dedf4e5e738763f69145a",
-  "571b242012fb7ae07fa9baac3df102e0",
-  "08b0e27988598881d920a9e64f5615cd",
+    (Byte*)"4f021db243bc633d7178183a9fa071e8",
+    (Byte*)"b4d9ada9ad7dedf4e5e738763f69145a",
+    (Byte*)"571b242012fb7ae07fa9baac3df102e0",
+    (Byte*)"08b0e27988598881d920a9e64f5615cd",
   };
   Byte * pt_192_cbc_dec[] = {
-  "6bc1bee22e409f96e93d7e117393172a", 
-  "ae2d8a571e03ac9c9eb76fac45af8e51", 
-  "30c81c46a35ce411e5fbc1191a0a52ef", 
-  "f69f2445df4f9b17ad2b417be66c3710", 
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a", 
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51", 
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef", 
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710", 
   };
 
-  Byte * key_256_cbc_enc = "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
-  Byte * iv_256_cbc_enc = "000102030405060708090a0b0c0d0e0f";
+  Byte * key_256_cbc_enc = (Byte*)"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
+  Byte * iv_256_cbc_enc = (Byte*)"000102030405060708090a0b0c0d0e0f";
   Byte * tv_256_cbc_enc[] = {
-  "6bc1bee22e409f96e93d7e117393172a", 
-  "ae2d8a571e03ac9c9eb76fac45af8e51", 
-  "30c81c46a35ce411e5fbc1191a0a52ef", 
-  "f69f2445df4f9b17ad2b417be66c3710", 
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a", 
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51", 
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef", 
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710", 
   };
   Byte * ct_256_cbc_enc[] = {
-  "f58c4c04d6e5f1ba779eabfb5f7bfbd6", 
-  "9cfc4e967edb808d679f777bc6702c7d", 
-  "39f23369a9d9bacfa530e26304231461", 
-  "b2eb05e2c39be9fcda6c19078c6a9d1b", 
+    (Byte*)"f58c4c04d6e5f1ba779eabfb5f7bfbd6", 
+    (Byte*)"9cfc4e967edb808d679f777bc6702c7d", 
+    (Byte*)"39f23369a9d9bacfa530e26304231461", 
+    (Byte*)"b2eb05e2c39be9fcda6c19078c6a9d1b", 
   };
 
-  Byte * key_256_cbc_dec = "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
-  Byte * iv_256_cbc_dec = "000102030405060708090a0b0c0d0e0f";
+  Byte * key_256_cbc_dec = (Byte*)"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
+  Byte * iv_256_cbc_dec = (Byte*)"000102030405060708090a0b0c0d0e0f";
   Byte * tv_256_cbc_dec[] = {
-    "f58c4c04d6e5f1ba779eabfb5f7bfbd6",
-    "9cfc4e967edb808d679f777bc6702c7d",
-    "39f23369a9d9bacfa530e26304231461",
-    "b2eb05e2c39be9fcda6c19078c6a9d1b",
+    (Byte*)"f58c4c04d6e5f1ba779eabfb5f7bfbd6",
+    (Byte*)"9cfc4e967edb808d679f777bc6702c7d",
+    (Byte*)"39f23369a9d9bacfa530e26304231461",
+    (Byte*)"b2eb05e2c39be9fcda6c19078c6a9d1b",
   };
   Byte * pt_256_cbc_dec[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a",
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51",
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef",
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710",
   };
 
   int i, b;
@@ -847,88 +744,88 @@ static void test_NIST_SP_800_38A_CBC ( void ) {
 
 static void test_NIST_SP_800_38A_ECB ( void ) {
 
-  Byte * key_ecb_128_enc = "2b7e151628aed2a6abf7158809cf4f3c";
+  Byte * key_ecb_128_enc = (Byte*)"2b7e151628aed2a6abf7158809cf4f3c";
   Byte * tv_ecb_128_enc[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a",
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51",
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef",
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710",
   };
   Byte * ct_ecb_128_enc[] = {
-    "3ad77bb40d7a3660a89ecaf32466ef97",
-    "f5d3d58503b9699de785895a96fdbaaf",
-    "43b1cd7f598ece23881b00e3ed030688",
-    "7b0c785e27e8ad3f8223207104725dd4",
+    (Byte*)"3ad77bb40d7a3660a89ecaf32466ef97",
+    (Byte*)"f5d3d58503b9699de785895a96fdbaaf",
+    (Byte*)"43b1cd7f598ece23881b00e3ed030688",
+    (Byte*)"7b0c785e27e8ad3f8223207104725dd4",
   };
 
-  Byte * key_ecb_128_dec = "2b7e151628aed2a6abf7158809cf4f3c";
+  Byte * key_ecb_128_dec = (Byte*)"2b7e151628aed2a6abf7158809cf4f3c";
   Byte * tv_ecb_128_dec[] = {
-    "3ad77bb40d7a3660a89ecaf32466ef97",
-    "f5d3d58503b9699de785895a96fdbaaf",
-    "43b1cd7f598ece23881b00e3ed030688",
-    "7b0c785e27e8ad3f8223207104725dd4",
+    (Byte*)"3ad77bb40d7a3660a89ecaf32466ef97",
+    (Byte*)"f5d3d58503b9699de785895a96fdbaaf",
+    (Byte*)"43b1cd7f598ece23881b00e3ed030688",
+    (Byte*)"7b0c785e27e8ad3f8223207104725dd4",
   };
   Byte * pt_ecb_128_dec[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a",
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51",
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef",
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710",
   };
 
-  Byte * key_ecb_192_enc = "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
+  Byte * key_ecb_192_enc = (Byte*)"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
   Byte * tv_ecb_192_enc[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a",
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51",
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef",
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710",
   };
   Byte * ct_ecb_192_enc[] = {
-    "bd334f1d6e45f25ff712a214571fa5cc",
-    "974104846d0ad3ad7734ecb3ecee4eef",
-    "ef7afd2270e2e60adce0ba2face6444e",
-    "9a4b41ba738d6c72fb16691603c18e0e",
+    (Byte*)"bd334f1d6e45f25ff712a214571fa5cc",
+    (Byte*)"974104846d0ad3ad7734ecb3ecee4eef",
+    (Byte*)"ef7afd2270e2e60adce0ba2face6444e",
+    (Byte*)"9a4b41ba738d6c72fb16691603c18e0e",
   };
 
-  Byte * key_ecb_192_dec = "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
+  Byte * key_ecb_192_dec = (Byte*)"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
   Byte * tv_ecb_192_dec[] = {
-    "bd334f1d6e45f25ff712a214571fa5cc",
-    "974104846d0ad3ad7734ecb3ecee4eef",
-    "ef7afd2270e2e60adce0ba2face6444e",
-    "9a4b41ba738d6c72fb16691603c18e0e",
+    (Byte*)"bd334f1d6e45f25ff712a214571fa5cc",
+    (Byte*)"974104846d0ad3ad7734ecb3ecee4eef",
+    (Byte*)"ef7afd2270e2e60adce0ba2face6444e",
+    (Byte*)"9a4b41ba738d6c72fb16691603c18e0e",
   };
   Byte * pt_ecb_192_dec[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a",
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51",
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef",
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710",
   };
 
-  Byte * key_ecb_256_enc = "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
+  Byte * key_ecb_256_enc = (Byte*)"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
   Byte * tv_ecb_256_enc[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a",
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51",
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef",
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710",
   };
   Byte * ct_ecb_256_enc[] = {
-    "f3eed1bdb5d2a03c064b5a7e3db181f8",
-    "591ccb10d410ed26dc5ba74a31362870",
-    "b6ed21b99ca6f4f9f153e7b1beafed1d",
-    "23304b7a39f9f3ff067d8d8f9e24ecc7",
+    (Byte*)"f3eed1bdb5d2a03c064b5a7e3db181f8",
+    (Byte*)"591ccb10d410ed26dc5ba74a31362870",
+    (Byte*)"b6ed21b99ca6f4f9f153e7b1beafed1d",
+    (Byte*)"23304b7a39f9f3ff067d8d8f9e24ecc7",
   };
 
-  Byte * key_ecb_256_dec = "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
+  Byte * key_ecb_256_dec = (Byte*)"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
   Byte * tv_ecb_256_dec[] = {
-    "f3eed1bdb5d2a03c064b5a7e3db181f8",
-    "591ccb10d410ed26dc5ba74a31362870",
-    "b6ed21b99ca6f4f9f153e7b1beafed1d",
-    "23304b7a39f9f3ff067d8d8f9e24ecc7",
+    (Byte*)"f3eed1bdb5d2a03c064b5a7e3db181f8",
+    (Byte*)"591ccb10d410ed26dc5ba74a31362870",
+    (Byte*)"b6ed21b99ca6f4f9f153e7b1beafed1d",
+    (Byte*)"23304b7a39f9f3ff067d8d8f9e24ecc7",
   };
   Byte * pt_ecb_256_dec[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
+    (Byte*)"6bc1bee22e409f96e93d7e117393172a",
+    (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51",
+    (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef",
+    (Byte*)"f69f2445df4f9b17ad2b417be66c3710",
   };
 
   int i, j;
@@ -1042,7 +939,7 @@ static void test_NIST_SP_800_38A_ECB ( void ) {
 
 static void test_HexString_To_Array ( void )
 {
-  Byte * str = "6bc1bee22e409f96e93d7e117393172a";
+  Byte * str = (Byte*)"6bc1bee22e409f96e93d7e117393172a";
   ByteStr * out;
   Byte hex[] = { 0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a };
 
@@ -1079,8 +976,6 @@ void do_tests ( void )
   TEST ( test_InvCipher );
   TEST ( test_NIST_SP_800_38A_ECB );
   TEST ( test_NIST_SP_800_38A_CBC );
-  TEST ( test_NIST_SP_800_38A_CBC_Short );
-  TEST ( test_NIST_SP_800_38A_CBC_128 );
   TEST ( test_CBC_Mode );
   TEST ( test_HexString_To_Array );
 }

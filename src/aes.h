@@ -1,8 +1,7 @@
 #ifndef AES_H
 #define AES_H
 
-#include "aesutils.h"
-
+// this file defines the interface of aes.c
 enum {
   FIPS_AES_128 = 0,
   FIPS_AES_192,
@@ -24,7 +23,6 @@ typedef struct _tag_word {
   Byte W[4];
 } Word;
 
-void KeyExpansion ( const Byte [], Word [] );
 void SetMode ( int );
 void Cipher ( Byte [], Byte [] );
 void InvCipher ( Byte [], Byte [] );
