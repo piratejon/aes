@@ -465,12 +465,48 @@ void XorString ( Byte * dst, Byte * src, int n ) {
   }
 }
 
-void CBC_Forward ( ByteStr * iv, ByteStr * key, ByteStr * pt[], int n ) {
+ByteStr * AllocateByteStr ( size_t len ) {
+  ByteStr * out = malloc(sizeof*out);
+  out->length = len;
+  out->raw = malloc((sizeof(*(out->raw))*len));
+  return out;
+}
+
+void ByteCopy ( Byte * dst, Byte * src, int count ) {
+  int i;
+  for ( i = 0; i < count; i += 1 ) dst[i] = src[i];
+}
+
+ByteStr * ByteStrDup ( ByteStr * in ) {
+  ByteStr * out = AllocateByteStr ( in->length );
+  ByteCopy ( out->raw, in->raw, in->length );
+  return out;
+}
+
+void CBC_Forward ( ByteStr * iv, ByteStr * key, ByteStr * pt_in[], ByteStr * ct_out[], int n ) {
   int i;
 
+  ByteCopy ( ct_out[0]->raw, iv->raw, 16 );
+  n -= 1;
   for ( i = 0; i < n; i += 1 ) {
-    XorString ( iv->raw, pt[i]->raw, 16 );
-    Cipher ( iv->raw, key->raw );
+    XorString ( ct_out[i]->raw, pt_in[i]->raw, 16 );
+    Cipher ( ct_out[i]->raw, key->raw );
+    ByteCopy ( ct_out[i+1]->raw, ct_out[i]->raw, 16 );
   }
+  XorString ( ct_out[i]->raw, pt_in[i]->raw, 16 );
+  Cipher ( ct_out[i]->raw, key->raw );
+}
+
+void CBC_Reverse ( ByteStr * iv, ByteStr * key, ByteStr * ct[], int n ) {
+  int i;
+  ByteStr * ct_tmp;
+
+  ct_tmp = ByteStrDup ( ct[0] );
+
+  for ( i = 0; i < n; i += 1 ) {
+    // InvCipher ( ct_tmp, 
+  }
+
+  free_bytestr(ct_tmp);
 }
 
