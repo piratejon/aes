@@ -10,10 +10,10 @@
 int pipefd[2];
 int len; // shared declaration ensures sizeof matches
 
-int passed = 0;
-int tested = 0;
+static int passed = 0;
+static int tested = 0;
 
-pid_t kidpid;
+static pid_t kidpid;
 
 void wait_attach ( void )
 {
@@ -22,7 +22,7 @@ void wait_attach ( void )
   while(1); // increment instruction pointer to continue
 }
 
-void send_message ( char * message )
+static void send_message ( char * message )
 {
   len = strlen(message);
   close(pipefd[0]);
@@ -31,7 +31,7 @@ void send_message ( char * message )
   close(pipefd[1]);
 }
 
-char * recv_message ( void )
+static char * recv_message ( void )
 {
   char * message = NULL;
   if ( read ( pipefd[0], &len, sizeof(len) ) == sizeof(len) )
@@ -64,7 +64,7 @@ void test_failed ( char * message )
   exit(1);
 }
 
-int execute_test ( char * test_name, void(*test_func)(void) )
+int execute_test ( const char * test_name, void(*test_func)(void) )
 {
   if ( 0 != pipe(pipefd) )
   {

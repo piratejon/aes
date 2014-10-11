@@ -622,6 +622,109 @@ static void test_CBC_Mode ( void )
   // Cipher ( input_stream_128, key_stream_128 );
 }
 
+static void test_NIST_SP_800_38A_CBC_128 ( void ) {
+  Byte * key_128_cbc_enc = "2b7e151628aed2a6abf7158809cf4f3c";
+  Byte * iv_128_cbc_enc = "000102030405060708090a0b0c0d0e0f";
+  Byte * tv_128_cbc_enc[] = {
+    "6bc1bee22e409f96e93d7e117393172a",
+    "ae2d8a571e03ac9c9eb76fac45af8e51",
+    "30c81c46a35ce411e5fbc1191a0a52ef",
+    "f69f2445df4f9b17ad2b417be66c3710",
+  };
+  Byte * ct_128_cbc_enc[] = {
+    "7649abac8119b246cee98e9b12e9197d",
+    "5086cb9b507219ee95db113a917678b2",
+    "73bed6b8e3c1743b7116e69e22229516",
+    "3ff1caa1681fac09120eca307586e1a7",
+  };
+
+  int i, b;
+  ByteStr * key, * ct, * iv;
+  ByteStr * pt[4];
+
+  SetMode(FIPS_AES_128);
+  key = HexString_To_Array ( key_128_cbc_enc );
+  iv = HexString_To_Array ( iv_128_cbc_enc );
+
+  for ( i = 0; i < 4; i += 1 ) {
+    pt[i] = HexString_To_Array ( tv_128_cbc_enc[i] );
+  }
+
+  CBC_Forward(iv, key, pt, 4);
+
+  for ( i = 0; i < 4; i += 1 ) {
+    free_bytestr(pt[i]);
+  }
+
+  // ct_128_cbc_enc
+  ct = HexString_To_Array ( ct_128_cbc_enc[3] );
+
+  for ( b = 0; b < ct->length; b += 1 ) {
+    ASSERT ( iv->raw[b] == ct->raw[b], "Wrong ciphertext." );
+  }
+
+  free_bytestr(key);
+  free_bytestr(iv);
+  free_bytestr(ct);
+}
+
+static void test_NIST_SP_800_38A_CBC_Short ( void ) {
+  Byte * key_128_cbc_enc = "2b7e151628aed2a6abf7158809cf4f3c";
+  Byte * iv_128_cbc_enc = "000102030405060708090a0b0c0d0e0f";
+  Byte * tv_128_cbc_enc[] = {
+    "6bc1bee22e409f96e93d7e117393172a",
+    "ae2d8a571e03ac9c9eb76fac45af8e51",
+    "30c81c46a35ce411e5fbc1191a0a52ef",
+    "f69f2445df4f9b17ad2b417be66c3710",
+  };
+  Byte * ct_128_cbc_enc[] = {
+    "7649abac8119b246cee98e9b12e9197d",
+    "5086cb9b507219ee95db113a917678b2",
+    "73bed6b8e3c1743b7116e69e22229516",
+    "3ff1caa1681fac09120eca307586e1a7",
+  };
+
+  int i, b;
+  ByteStr * key, * ct, * iv;
+  ByteStr * pt[4];
+
+  SetMode(FIPS_AES_128);
+  key = HexString_To_Array ( key_128_cbc_enc );
+  iv = HexString_To_Array ( iv_128_cbc_enc );
+
+  for ( i = 0; i < 4; i += 1 ) {
+    pt[i] = HexString_To_Array ( tv_128_cbc_enc[i] );
+  }
+
+  XorString ( iv->raw, pt[0]->raw, 16 );
+  Cipher(iv->raw, key->raw);
+
+  XorString ( iv->raw, pt[1]->raw, 16 );
+  Cipher(iv->raw, key->raw);
+
+  XorString ( iv->raw, pt[2]->raw, 16 );
+  Cipher(iv->raw, key->raw);
+
+  XorString ( iv->raw, pt[3]->raw, 16 );
+  Cipher(iv->raw, key->raw);
+
+  for ( i = 0; i < 4; i += 1 ) {
+    free_bytestr(pt[i]);
+  }
+
+  // ct_128_cbc_enc
+  ct = HexString_To_Array ( ct_128_cbc_enc[3] );
+
+  for ( b = 0; b < ct->length; b += 1 ) {
+    ASSERT ( iv->raw[b] == ct->raw[b], "Wrong ciphertext." );
+  }
+
+  free_bytestr(key);
+  free_bytestr(iv);
+  free_bytestr(ct);
+
+}
+
 static void test_NIST_SP_800_38A_CBC ( void ) {
   Byte * key_128_cbc_enc = "2b7e151628aed2a6abf7158809cf4f3c";
   Byte * iv_128_cbc_enc = "000102030405060708090a0b0c0d0e0f";
@@ -713,28 +816,33 @@ static void test_NIST_SP_800_38A_CBC ( void ) {
     "f69f2445df4f9b17ad2b417be66c3710",
   };
 
-  int i, j;
-  ByteStr * key, * tv, * ct, * iv;
+  int i, b;
+  ByteStr * key, * ct, * iv;
+  ByteStr * pt[4];
 
   SetMode(FIPS_AES_128);
   key = HexString_To_Array ( key_128_cbc_enc );
   iv = HexString_To_Array ( iv_128_cbc_enc );
-  for ( i = 0; i < 1; i += 1 ) {
-    tv = HexString_To_Array(tv_128_cbc_enc[i]);
-    ct = HexString_To_Array(ct_128_cbc_enc[i]);
 
-    CBC_Forward ( iv->raw, tv->raw, key->raw );
-
-    for ( j = 0; j < tv->length; j += 1 ) {
-      ASSERT ( tv->raw[j] == ct->raw[j], "Wrong ciphertext." );
-    }
-
-    free_bytestr ( ct );
-    free_bytestr ( tv );
+  for ( i = 0; i < 4; i += 1 ) {
+    pt[i] = HexString_To_Array ( tv_128_cbc_enc[i] );
   }
+
+  CBC_Forward(iv, key, pt, 4);
+
+  for ( i = 0; i < 4; i += 1 ) {
+    free_bytestr(pt[i]);
+  }
+
+  ct = HexString_To_Array ( ct_128_cbc_enc[3] );
+
+  for ( b = 0; b < ct->length; b += 1 ) {
+    ASSERT ( iv->raw[b] == ct->raw[b], "Wrong ciphertext." );
+  }
+
   free_bytestr(key);
   free_bytestr(iv);
- 
+  free_bytestr(ct);
 }
 
 static void test_NIST_SP_800_38A_ECB ( void ) {
@@ -971,6 +1079,8 @@ void do_tests ( void )
   TEST ( test_InvCipher );
   TEST ( test_NIST_SP_800_38A_ECB );
   TEST ( test_NIST_SP_800_38A_CBC );
+  TEST ( test_NIST_SP_800_38A_CBC_Short );
+  TEST ( test_NIST_SP_800_38A_CBC_128 );
   TEST ( test_CBC_Mode );
   TEST ( test_HexString_To_Array );
 }

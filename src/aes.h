@@ -28,8 +28,11 @@ void KeyExpansion ( const Byte [], Word [] );
 void SetMode ( int );
 void Cipher ( Byte [], Byte [] );
 void InvCipher ( Byte [], Byte [] );
-void CBC_Forward ( Byte [], Byte [], Byte [] );
+void CBC_Forward ( ByteStr *, ByteStr *, ByteStr * [], int );
 ByteStr * HexString_To_Array ( Byte * );
+void XorString ( Byte *, Byte *, int );
+
+void free_bytestr ( ByteStr * );
 
 #endif // AES_H
 

@@ -1,6 +1,6 @@
 AC_PREREQ([2.59])
-AC_INIT([example], [0.1], [js AT piratejon DOT com])
-AC_CONFIG_SRCDIR([src/example.c])
+AC_INIT([jsaes], [0.1], [js AT piratejon DOT com])
+AC_CONFIG_SRCDIR([src/aes.c])
 
 # place to put some extra build scripts installed
 AC_CONFIG_AUX_DIR([build-aux])
@@ -23,7 +23,7 @@ AC_PROG_RANLIB
 #AC_PROG_CC_STDC
 #AC_CHECK_HEADERS([any headers needed, separated by commas])
 #AC_CHECK_HEADERS([stdlib.h, stdbool.h])
-AC_CHECK_HEADERS([stdlib.h, unistd.h])
+AC_CHECK_HEADERS([stdio.h, stdlib.h])
 
 # Output files
 AC_CONFIG_HEADERS([config.h])

@@ -458,12 +458,21 @@ ByteStr * HexString_To_Array ( Byte * hexes ) {
   return out;
 }
 
-void CBC_Forward ( Byte iv[], Byte input[], Byte key[] ) {
-  int i;
-  Byte x[] = { 0x76, 0x49, 0xab, 0xac, 0x81, 0x19, 0xb2, 0x46, 0xce, 0xe9, 0x8e, 0x9b, 0x12, 0xe9, 0x19, 0x7d };
+void XorString ( Byte * dst, Byte * src, int n ) {
+  int b;
+  for ( b = 0; b < n; b += 1 ) {
+    dst[b] ^= src[b];
+  }
+}
 
-  for ( i = 0; i < sizeof(x)/sizeof(x[0]); i += 1 ) {
-    input[i] = x[i];
+void CBC_Forward ( ByteStr * iv, ByteStr * key, ByteStr * pt[], int n ) {
+  int i;
+
+  // from wikipedia the first step is to encrypt the IV with the key
+  // is that what SP800 does? no, it says xor plaintext with IV
+  for ( i = 0; i < n; i += 1 ) {
+    XorString ( iv->raw, pt[i]->raw, 16 );
+    Cipher ( iv->raw, key->raw );
   }
 }
 

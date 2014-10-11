@@ -1,10 +1,10 @@
 ## Process this file with automake to produce Makefile.in
 
-lib_LIBRARIES = libexample.a
-libexample_a_SOURCES = example.c example.h
+lib_LIBRARIES = libjsaes.a
+libjsaes_a_SOURCES = aes.c aes.h aesutils.h aes_test.h
 
-bin_PROGRAMS = example
-example_SOURCES = example_main.c
-example_CFLAGS = -std=c99 -Wall -g3
-example_LDADD = libexample.a
+bin_PROGRAMS = aes_main
+jsaes_SOURCES = aes_main.c
+jsaes_CFLAGS = -DTESTING -Weverything -g3
+jsaes_LDADD = libjsaes.a
 
