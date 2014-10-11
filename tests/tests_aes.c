@@ -622,6 +622,106 @@ static void test_CBC_Mode ( void )
   // Cipher ( input_stream_128, key_stream_128 );
 }
 
+static void test_NIST_SP_800_38A_CBC_Enc_128 ( void ) {
+  char * key_128_cbc_enc = "2b7e151628aed2a6abf7158809cf4f3c";
+  char * iv_128_cbc_enc = "000102030405060708090a0b0c0d0e0f";
+  char * pt_128_cbc_enc[] = {
+    "6bc1bee22e409f96e93d7e117393172a",
+    "ae2d8a571e03ac9c9eb76fac45af8e51",
+    "30c81c46a35ce411e5fbc1191a0a52ef",
+    "f69f2445df4f9b17ad2b417be66c3710",
+  };
+  char * ct_128_cbc_enc[] = {
+    "7649abac8119b246cee98e9b12e9197d",
+    "5086cb9b507219ee95db113a917678b2",
+    "73bed6b8e3c1743b7116e69e22229516",
+    "3ff1caa1681fac09120eca307586e1a7",
+  };
+
+  int i, b;
+  ByteStr * key, * iv;
+  ByteStr * pt[4], * ct[4], * ct_cmp[4];
+
+  SetMode(FIPS_AES_128);
+  key = HexString_To_Array ( key_128_cbc_enc );
+  iv = HexString_To_Array ( iv_128_cbc_enc );
+  for ( i = 0; i < 4; i += 1 ) {
+    pt[i] = HexString_To_Array ( pt_128_cbc_enc[i] );
+    ct_cmp[i] = HexString_To_Array ( ct_128_cbc_enc[i] );
+    ct[i] = AllocateByteStr ( 16 );
+  }
+  CBC_Forward(iv, key, pt, ct, 4);
+  for ( i = 0; i < 4; i += 1 ) {
+    for ( b = 0; b < 16; b += 1 ) {
+      ASSERT ( ct[i]->raw[b] == ct[i]->raw[b], "Wrong ciphertext." );
+    }
+  }
+  for ( i = 0; i < 4; i += 1 ) {
+    free_bytestr(pt[i]);
+    free_bytestr(ct[i]);
+    free_bytestr(ct_cmp[i]);
+  }
+  free_bytestr(key);
+  free_bytestr(iv);
+}
+
+static void test_NIST_SP_800_38A_CBC_Dec_128 ( void ) {
+  char * key_128_cbc_dec = "2b7e151628aed2a6abf7158809cf4f3c";
+  char * iv_128_cbc_dec = "000102030405060708090a0b0c0d0e0f";
+  char * ct_128_cbc_dec[] = {
+    "7649abac8119b246cee98e9b12e9197d",
+    "5086cb9b507219ee95db113a917678b2",
+    "73bed6b8e3c1743b7116e69e22229516",
+    "3ff1caa1681fac09120eca307586e1a7",
+  };
+  char * pt_128_cbc_dec[] = {
+    "6bc1bee22e409f96e93d7e117393172a",
+    "ae2d8a571e03ac9c9eb76fac45af8e51",
+    "30c81c46a35ce411e5fbc1191a0a52ef",
+    "f69f2445df4f9b17ad2b417be66c3710", 
+  };
+
+  int i, b;
+  ByteStr * key, * iv;
+  ByteStr * pt[4], * ct[4], * pt_cmp[4];
+
+  SetMode(FIPS_AES_128);
+  key = HexString_To_Array ( key_128_cbc_dec );
+  iv = HexString_To_Array ( iv_128_cbc_dec );
+  for ( i = 0; i < 4; i += 1 ) {
+    ct[i] = HexString_To_Array ( ct_128_cbc_dec[i] );
+    pt_cmp[i] = HexString_To_Array ( pt_128_cbc_dec[i] );
+    pt[i] = AllocateByteStr ( 16 );
+  }
+  CBC_Reverse(iv, key, ct, pt, 4);
+  for ( i = 0; i < 4; i += 1 ) {
+    for ( b = 0; b < 16; b += 1 ) {
+      ASSERT ( pt[i]->raw[b] == pt_cmp[i]->raw[b], "Wrong ciphertext." );
+    }
+  }
+  for ( i = 0; i < 4; i += 1 ) {
+    free_bytestr(pt[i]);
+    free_bytestr(ct[i]);
+    free_bytestr(pt_cmp[i]);
+  }
+  free_bytestr(key);
+  free_bytestr(iv);
+
+  /*
+  SetMode(FIPS_AES_128);
+  key = HexString_To_Array ( key_128_cbc_dec );
+  iv = HexString_To_Array ( iv_128_cbc_dec );
+  for ( i = 0; i < 4; i += 1 ) pt[i] = HexString_To_Array ( ct_128_cbc_dec[i] );
+  CBC_Reverse(iv, key, pt, 4);
+  for ( i = 0; i < 4; i += 1 ) free_bytestr(pt[i]);
+  ct = HexString_To_Array ( pt_128_cbc_enc[3] );
+  for ( b = 0; b < ct->length; b += 1 ) ASSERT ( iv->raw[b] == ct->raw[b], "Wrong plaintext (dec)." );
+  free_bytestr(key);
+  free_bytestr(iv);
+  free_bytestr(ct);
+  */
+}
+
 static void test_NIST_SP_800_38A_CBC_Enc_256 ( void ) {
   char * key_256_cbc_enc = "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
   char * iv_256_cbc_enc = "000102030405060708090a0b0c0d0e0f";
@@ -736,78 +836,6 @@ static void test_NIST_SP_800_38A_CBC_Enc_192 ( void ) {
   }
   free_bytestr(key);
   free_bytestr(iv);
-}
-
-static void test_NIST_SP_800_38A_CBC_Enc_128 ( void ) {
-  char * key_128_cbc_enc = "2b7e151628aed2a6abf7158809cf4f3c";
-  char * iv_128_cbc_enc = "000102030405060708090a0b0c0d0e0f";
-  char * pt_128_cbc_enc[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
-  };
-  char * ct_128_cbc_enc[] = {
-    "7649abac8119b246cee98e9b12e9197d",
-    "5086cb9b507219ee95db113a917678b2",
-    "73bed6b8e3c1743b7116e69e22229516",
-    "3ff1caa1681fac09120eca307586e1a7",
-  };
-
-  char * key_128_cbc_dec = "2b7e151628aed2a6abf7158809cf4f3c";
-  char * iv_128_cbc_dec = "000102030405060708090a0b0c0d0e0f";
-  char * ct_128_cbc_dec[] = {
-    "7649abac8119b246cee98e9b12e9197d",
-    "5086cb9b507219ee95db113a917678b2",
-    "73bed6b8e3c1743b7116e69e22229516",
-    "3ff1caa1681fac09120eca307586e1a7",
-  };
-  char * pt_128_cbc_dec[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710", 
-  };
-
-  int i, b;
-  ByteStr * key, * iv;
-  ByteStr * pt[4], * ct[4], * ct_cmp[4];
-
-  SetMode(FIPS_AES_128);
-  key = HexString_To_Array ( key_128_cbc_enc );
-  iv = HexString_To_Array ( iv_128_cbc_enc );
-  for ( i = 0; i < 4; i += 1 ) {
-    pt[i] = HexString_To_Array ( pt_128_cbc_enc[i] );
-    ct_cmp[i] = HexString_To_Array ( ct_128_cbc_enc[i] );
-    ct[i] = AllocateByteStr ( 16 );
-  }
-  CBC_Forward(iv, key, pt, ct, 4);
-  for ( i = 0; i < 4; i += 1 ) {
-    for ( b = 0; b < 16; b += 1 ) {
-      ASSERT ( ct[i]->raw[b] == ct[i]->raw[b], "Wrong ciphertext." );
-    }
-  }
-  for ( i = 0; i < 4; i += 1 ) {
-    free_bytestr(pt[i]);
-    free_bytestr(ct[i]);
-    free_bytestr(ct_cmp[i]);
-  }
-  free_bytestr(key);
-  free_bytestr(iv);
-
-  /*
-  SetMode(FIPS_AES_128);
-  key = HexString_To_Array ( key_128_cbc_dec );
-  iv = HexString_To_Array ( iv_128_cbc_dec );
-  for ( i = 0; i < 4; i += 1 ) pt[i] = HexString_To_Array ( ct_128_cbc_dec[i] );
-  CBC_Reverse(iv, key, pt, 4);
-  for ( i = 0; i < 4; i += 1 ) free_bytestr(pt[i]);
-  ct = HexString_To_Array ( pt_128_cbc_enc[3] );
-  for ( b = 0; b < ct->length; b += 1 ) ASSERT ( iv->raw[b] == ct->raw[b], "Wrong plaintext (dec)." );
-  free_bytestr(key);
-  free_bytestr(iv);
-  free_bytestr(ct);
-  */
 }
 
 static void test_NIST_SP_800_38A_ECB_Enc_128 ( void ) {
