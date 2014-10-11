@@ -706,20 +706,6 @@ static void test_NIST_SP_800_38A_CBC_Dec_128 ( void ) {
   }
   free_bytestr(key);
   free_bytestr(iv);
-
-  /*
-  SetMode(FIPS_AES_128);
-  key = HexString_To_Array ( key_128_cbc_dec );
-  iv = HexString_To_Array ( iv_128_cbc_dec );
-  for ( i = 0; i < 4; i += 1 ) pt[i] = HexString_To_Array ( ct_128_cbc_dec[i] );
-  CBC_Reverse(iv, key, pt, 4);
-  for ( i = 0; i < 4; i += 1 ) free_bytestr(pt[i]);
-  ct = HexString_To_Array ( pt_128_cbc_enc[3] );
-  for ( b = 0; b < ct->length; b += 1 ) ASSERT ( iv->raw[b] == ct->raw[b], "Wrong plaintext (dec)." );
-  free_bytestr(key);
-  free_bytestr(iv);
-  free_bytestr(ct);
-  */
 }
 
 static void test_NIST_SP_800_38A_CBC_Enc_256 ( void ) {
@@ -1101,7 +1087,7 @@ void do_tests ( void )
   TEST ( test_NIST_SP_800_38A_ECB_Dec_128 );
   TEST ( test_NIST_SP_800_38A_ECB_Dec_192 );
   TEST ( test_NIST_SP_800_38A_ECB_Dec_256 );
-  // TEST ( test_NIST_SP_800_38A_CBC_Dec_128 );
+  TEST ( test_NIST_SP_800_38A_CBC_Dec_128 );
   // TEST ( test_NIST_SP_800_38A_CBC_Dec_192 );
 //   TEST ( test_NIST_SP_800_38A_CBC_Dec_256 );
   TEST ( test_HexString_To_Array );
