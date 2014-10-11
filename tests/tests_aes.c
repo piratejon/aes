@@ -655,7 +655,7 @@ static void test_NIST_SP_800_38A_CBC ( void ) {
 
   Byte * key_192_cbc_enc = (Byte*)"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
   Byte * iv_192_cbc_enc = (Byte*)"000102030405060708090a0b0c0d0e0f";
-  Byte * tv_193_cbc_enc[] = {
+  Byte * tv_192_cbc_enc[] = {
     (Byte*)"6bc1bee22e409f96e93d7e117393172a", 
     (Byte*)"ae2d8a571e03ac9c9eb76fac45af8e51", 
     (Byte*)"30c81c46a35ce411e5fbc1191a0a52ef", 
@@ -720,23 +720,35 @@ static void test_NIST_SP_800_38A_CBC ( void ) {
   SetMode(FIPS_AES_128);
   key = HexString_To_Array ( key_128_cbc_enc );
   iv = HexString_To_Array ( iv_128_cbc_enc );
-
-  for ( i = 0; i < 4; i += 1 ) {
-    pt[i] = HexString_To_Array ( tv_128_cbc_enc[i] );
-  }
-
+  for ( i = 0; i < 4; i += 1 ) pt[i] = HexString_To_Array ( tv_128_cbc_enc[i] );
   CBC_Forward(iv, key, pt, 4);
-
-  for ( i = 0; i < 4; i += 1 ) {
-    free_bytestr(pt[i]);
-  }
-
+  for ( i = 0; i < 4; i += 1 ) free_bytestr(pt[i]);
   ct = HexString_To_Array ( ct_128_cbc_enc[3] );
+  for ( b = 0; b < ct->length; b += 1 ) ASSERT ( iv->raw[b] == ct->raw[b], "Wrong ciphertext." );
+  free_bytestr(key);
+  free_bytestr(iv);
+  free_bytestr(ct);
 
-  for ( b = 0; b < ct->length; b += 1 ) {
-    ASSERT ( iv->raw[b] == ct->raw[b], "Wrong ciphertext." );
-  }
+  SetMode(FIPS_AES_192);
+  key = HexString_To_Array ( key_192_cbc_enc );
+  iv = HexString_To_Array ( iv_192_cbc_enc );
+  for ( i = 0; i < 4; i += 1 ) pt[i] = HexString_To_Array ( tv_192_cbc_enc[i] );
+  CBC_Forward(iv, key, pt, 4);
+  for ( i = 0; i < 4; i += 1 ) free_bytestr(pt[i]);
+  ct = HexString_To_Array ( ct_192_cbc_enc[3] );
+  for ( b = 0; b < ct->length; b += 1 ) ASSERT ( iv->raw[b] == ct->raw[b], "Wrong ciphertext." );
+  free_bytestr(key);
+  free_bytestr(iv);
+  free_bytestr(ct);
 
+  SetMode(FIPS_AES_256);
+  key = HexString_To_Array ( key_256_cbc_enc );
+  iv = HexString_To_Array ( iv_256_cbc_enc );
+  for ( i = 0; i < 4; i += 1 ) pt[i] = HexString_To_Array ( tv_256_cbc_enc[i] );
+  CBC_Forward(iv, key, pt, 4);
+  for ( i = 0; i < 4; i += 1 ) free_bytestr(pt[i]);
+  ct = HexString_To_Array ( ct_256_cbc_enc[3] );
+  for ( b = 0; b < ct->length; b += 1 ) ASSERT ( iv->raw[b] == ct->raw[b], "Wrong ciphertext." );
   free_bytestr(key);
   free_bytestr(iv);
   free_bytestr(ct);
