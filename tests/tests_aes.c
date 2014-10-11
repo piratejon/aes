@@ -1157,7 +1157,7 @@ static void test_NIST_SP_800_38A_CFB1_Enc_128 ( void ) {
   };
 
   int i;
-  ByteStr * key, * iv, *ct[16], *out[16];
+  ByteStr * key, * iv, *pt[16], *ct[16], *out[16];
 
   key = HexString_To_Array ( key_cfb1_enc_128 );
   iv = HexString_To_Array ( iv_cfb1_enc_128 );
@@ -1166,20 +1166,23 @@ static void test_NIST_SP_800_38A_CFB1_Enc_128 ( void ) {
     ct[i] = HexString_To_Array ( ct_cfb1_enc_128[i] );
   }
   for ( i = 0; i < 16; i += 1 ) {
+    pt[i] = HexString_To_Array ( pt_cfb1_enc_128[i] );
+  }
+  for ( i = 0; i < 16; i += 1 ) {
     out[i] = HexString_To_Array ( output_block_cfb1_enc_128[i] );
   }
 
   SetMode(FIPS_AES_128);
   Cipher(iv->raw, key->raw);
-  for ( i = 0; i < 16; i += 1 ) ASSERT(iv->raw[i] == out[0]->raw[i], "Wrong output from CFB1 cipher.");
+  for ( i = 0; i < 16; i += 1 ) ASSERT(iv->raw[i] == out[0]->raw[i], "Wrong output from CFB1 cipher iter 1.");
+  XorString ( iv->raw, pt[0]->raw, pt[0]->length );
+  ASSERT( (iv->raw[0] & 0x01) == (ct[0]->raw[0] & 0x01), "Wrong ct" );
 
   // ByteCopy ( bip->raw, iv->raw, 16 );
 
   for ( i = 0; i < 16; i += 1 ) {
     free_bytestr(ct[i]);
-  }
-
-  for ( i = 0; i < 16; i += 1 ) {
+    free_bytestr(pt[i]);
     free_bytestr(out[i]);
   }
 
