@@ -157,23 +157,16 @@ TEST_OR_STATIC void KeyExpansion ( const Byte keystream[], Word w[] ) {
     w[i].W[3] = keystream[4*i + 3];
   }
 
-  dumpwords ( "words", w, Nk[Mode] );
-
   for ( ; i < Nb[Mode] * (Nr[Mode] + 1); i += 1 ) {
     memcpy(&temp, &(w[i-1]), sizeof(temp));
     if ( i % Nk[Mode] == 0 ) {
       RotWord(&temp);
-      dumpwords ( "RotWord", &temp, 1 );
       SubWord(&temp);
-      dumpwords ( "SubWord", &temp, 1 );
       XorRconWord(&temp, i / Nk[Mode]);
-      dumpwords ( "XorRcon", &temp, 1 );
     } else if ( Nk[Mode] > 6 && i % Nk[Mode] == 4 ) {
       SubWord(&temp);
-      dumpwords ( "SubWord2", &temp, 1 );
     }
     XorWord (&temp, &(w[i-Nk[Mode]]));
-    dumpwords ( "XorLast", &temp, 1 );
     memcpy(&(w[i]), &temp, sizeof(temp));
   }
 }
@@ -359,30 +352,18 @@ void Cipher ( Byte input_stream[], Byte key_stream[] ) {
 
   KeyExpansion ( key_stream, w );
 
-  dumpstate ( "input", &state );
-  dumpwords ( "k_sch", w, Nk[Mode] );
-
   AddRoundKey ( &state, w );
-  dumpstate ( "start", &state );
 
   for ( i = 1; i < Nr[Mode]; i += 1 ) {
     SubBytes ( &state );
-    dumpstate ( "s_box", &state );
     ShiftRows ( &state );
-    dumpstate ( "s_row", &state );
     MixColumns ( &state );
-    dumpstate ( "m_col", &state );
     AddRoundKey ( &state, w + i * Nb[Mode] );
-    dumpwords ( "k_sch", w + i * Nb[Mode], Nk[Mode] );
   }
 
   SubBytes ( &state );
-  dumpstate ( "s_box", &state );
   ShiftRows ( &state );
-  dumpstate ( "s_row", &state );
   AddRoundKey ( &state, w + i * Nb[Mode] );
-  dumpwords ( "k_sch", w + i * Nb[Mode], Nk[Mode] );
-  dumpstate ( "outpt", &state );
 
   BlockToStream ( &state, input_stream );
 }
@@ -399,8 +380,6 @@ void InvCipher ( Byte input_stream[], Byte key_stream[] ) {
 
   StreamToBlock ( input_stream, &state );
 
-  dumpstate ( "ainput", &state );
-
   KeyExpansion ( key_stream, w );
 
   AddRoundKey ( &state, w + Nr[Mode] * Nb[Mode] );
@@ -415,8 +394,6 @@ void InvCipher ( Byte input_stream[], Byte key_stream[] ) {
   InvShiftRows ( &state );
   InvSubBytes ( &state );
   AddRoundKey ( &state, w + i * Nb[Mode] );
-
-  dumpstate ( "binput", &state );
 
   BlockToStream ( &state, input_stream );
 }
@@ -434,22 +411,21 @@ void free_bytestr ( ByteStr * out ) {
 }
 
 ByteStr * HexString_To_Array ( char * hexes ) {
-  int i;
+  int i, len;
   ByteStr * out = NULL;
 
-  for ( i = 0; hexes[i]; i += 1 );
+  for ( len = 0; hexes[len]; len += 1 );
+  i = len;
 
   out = malloc(sizeof(*out));
   if ( i & 1 ) out->length = (i/2) + 1;
   else out->length = i/2;
   out->raw = malloc(sizeof(*(out->raw))*i);
 
-  printf("len: %d, out: %p, out->raw: %p\n", i, out, out->raw);
-
-  for ( i = 0; hexes[i]; i += 2 ) {
+  for ( i = 0; i < len; i += 2 ) {
     out->raw[i/2] = (char_to_nibble(hexes[i]) << 4);
 
-    if ( hexes[i+1] ) {
+    if ( i < len - 1 && hexes[i+1] ) {
       out->raw[i/2] |= char_to_nibble(hexes[i+1]);
     }
   }

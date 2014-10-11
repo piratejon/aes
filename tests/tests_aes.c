@@ -309,8 +309,8 @@ static void test_AddRoundKey ( void )
 
   BlockToStream ( &state, output );
 
-  dumpbytes ( output, 16 );
-  dumpbytes ( result, 16 );
+  // dumpbytes ( output, 16 );
+  // dumpbytes ( result, 16 );
 
   for ( i = 0; i < 16; i += 1 ) {
     ASSERT ( output[i] == result[i], "AddRoundKey fault" );
@@ -412,8 +412,8 @@ static void test_MixColumns ( void )
 
   MixColumns ( &state );
 
-  dumpstate ( "MixColumns result", &state );
-  dumpstate ( "MixColumns expect", &correct );
+  // dumpstate ( "MixColumns result", &state );
+  // dumpstate ( "MixColumns expect", &correct );
 
   for ( i = 0; i < 4; i += 1 ) {
     for ( j = 0; j < 4; j += 1 ) {
@@ -471,9 +471,9 @@ static void test_ShiftRows ( void )
 
   StreamToBlock ( input_stream, &state );
 
-  dumpstate ( "ShiftRows before", &state );
+  // dumpstate ( "ShiftRows before", &state );
   ShiftRows ( &state );
-  dumpstate ( "ShiftRows  after", &state );
+  // dumpstate ( "ShiftRows  after", &state );
 
   BlockToStream ( &state, output_stream );
 
@@ -520,8 +520,8 @@ static void test_BlockToStream ( void )
   StreamToBlock ( s, &b );
   BlockToStream ( &b, t );
 
-  dumpbytes ( s, sizeof(s)/sizeof(s[0]) );
-  dumpbytes ( t, sizeof(t)/sizeof(t[0]) );
+  // dumpbytes ( s, sizeof(s)/sizeof(s[0]) );
+  // dumpbytes ( t, sizeof(t)/sizeof(t[0]) );
 
   for ( i = 0; i < sizeof(t)/sizeof(t[0]); i += 1 ) {
     ASSERT ( s[i] == t[i], "BlockToStream fault" );
@@ -1096,6 +1096,63 @@ static void test_HexString_To_Array ( void )
   free_bytestr(out);
 }
 
+static void test_NIST_SP_800_38A_CFB1_Enc_128 ( void ) {
+  char * key = "2b7e151628aed2a6abf7158809cf4f3c";
+  char * iv = "000102030405060708090a0b0c0d0e0f";
+
+  char * input_block[] = {
+    "000102030405060708090a0b0c0d0e0f",
+    "00020406080a0c0e10121416181a1c1e",
+    "0004080c1014181c2024282c3034383d",
+    "0008101820283038404850586068707b",
+    "00102030405060708090a0b0c0d0e0f6",
+    "0020406080a0c0e10121416181a1c1ed",
+    "004080c1014181c2024282c3034383da",
+    "008101820283038404850586068707b4",
+    "0102030405060708090a0b0c0d0e0f68",
+    "020406080a0c0e10121416181a1c1ed1",
+    "04080c1014181c2024282c3034383da2",
+    "08101820283038404850586068707b45",
+    "102030405060708090a0b0c0d0e0f68b",
+    "20406080a0c0e10121416181a1c1ed16",
+    "4080c1014181c2024282c3034383da2c",
+    "8101820283038404850586068707b459",
+  };
+
+  char * output_block[] = {
+    "50fe67cc996d32b6da0937e99bafec60",
+    "19cf576c7596e702f298b35666955c79",
+    "59e17759acd02b801fa321ea059e331f",
+    "71f415b0cc109e8b0faa14ab740c22f4",
+    "3fb76d3d1048179964597a0f64d5adad",
+    "4c943b4bac54ab974e3e52326d29aaa1",
+    "c94da41eb3d3acf1993a512ab1e8203f",
+    "e07f5e98778f75dbb2691c3f582c3953",
+    "02ef5fc8961efcce8568bc0731262dc7",
+    "9f5a30367065efbe914b53698c8716b7",
+    "d018cfb81d0580edbff955ed74d382db",
+    "81272ab351e08e0b695b94b8164d86f4",
+    "094d33f856483d3fa01ba94f7e5ab3e7",
+    "609900ad61923c8c102cd8d0d7947a2c",
+    "9e5a154de966ab4db9c88b22a398134e",
+    "7fe16252b338bc4de3725c4156dfed20",
+  };
+
+  char * pt[] = { // only use lsb
+    "0","1","1","0","1","0","1","1","1","1","0","0","0","0","0","1"
+  };
+
+  char * ct[] = { // only use lsb
+    "0","1","1","0","1","0","0","0","1","0","1","1","0","0","1","1",
+  };
+
+  ByteStr * lol = HexString_To_Array(pt[0]);
+  ASSERT ( lol->length == 1, "Wrong length on single byte hex string." );
+  ASSERT ( lol->raw[0] == 0x00, "Wrong value on single byte hex string." );
+
+  free_bytestr ( lol );
+}
+
 void do_tests ( void )
 {
   TEST ( sanity_check_zero );
@@ -1124,6 +1181,7 @@ void do_tests ( void )
   TEST ( test_NIST_SP_800_38A_CBC_Dec_128 );
   TEST ( test_NIST_SP_800_38A_CBC_Dec_192 );
   TEST ( test_NIST_SP_800_38A_CBC_Dec_256 );
+  TEST ( test_NIST_SP_800_38A_CFB1_Enc_128 );
   TEST ( test_HexString_To_Array );
 }
 
