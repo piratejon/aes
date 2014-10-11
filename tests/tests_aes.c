@@ -708,6 +708,92 @@ static void test_NIST_SP_800_38A_CBC_Dec_128 ( void ) {
   free_bytestr(iv);
 }
 
+static void test_NIST_SP_800_38A_CBC_Enc_192 ( void ) {
+  char * key_192_cbc_enc = "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
+  char * iv_192_cbc_enc = "000102030405060708090a0b0c0d0e0f";
+  char * pt_192_cbc_enc[] = {
+    "6bc1bee22e409f96e93d7e117393172a", 
+    "ae2d8a571e03ac9c9eb76fac45af8e51", 
+    "30c81c46a35ce411e5fbc1191a0a52ef", 
+    "f69f2445df4f9b17ad2b417be66c3710", 
+  };
+  char * ct_192_cbc_enc[] = {
+    "4f021db243bc633d7178183a9fa071e8",
+    "b4d9ada9ad7dedf4e5e738763f69145a", 
+    "571b242012fb7ae07fa9baac3df102e0", 
+    "08b0e27988598881d920a9e64f5615cd",
+  };
+
+  int i, b;
+  ByteStr * key, * iv;
+  ByteStr * pt[4], * ct[4], * ct_cmp[4];
+
+  SetMode(FIPS_AES_192);
+  key = HexString_To_Array ( key_192_cbc_enc );
+  iv = HexString_To_Array ( iv_192_cbc_enc );
+  for ( i = 0; i < 4; i += 1 ) {
+    pt[i] = HexString_To_Array ( pt_192_cbc_enc[i] );
+    ct_cmp[i] = HexString_To_Array ( ct_192_cbc_enc[i] );
+    ct[i] = AllocateByteStr ( 16 );
+  }
+  CBC_Forward(iv, key, pt, ct, 4);
+  for ( i = 0; i < 4; i += 1 ) {
+    for ( b = 0; b < 16; b += 1 ) {
+      ASSERT ( ct[i]->raw[b] == ct[i]->raw[b], "Wrong ciphertext." );
+    }
+  }
+  for ( i = 0; i < 4; i += 1 ) {
+    free_bytestr(pt[i]);
+    free_bytestr(ct[i]);
+    free_bytestr(ct_cmp[i]);
+  }
+  free_bytestr(key);
+  free_bytestr(iv);
+}
+
+static void test_NIST_SP_800_38A_CBC_Dec_192 ( void ) {
+  char * key_192_cbc_dec = "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
+  char * iv_192_cbc_dec = "000102030405060708090a0b0c0d0e0f";
+  char * ct_192_cbc_dec[] = {
+    "4f021db243bc633d7178183a9fa071e8",
+    "b4d9ada9ad7dedf4e5e738763f69145a",
+    "571b242012fb7ae07fa9baac3df102e0",
+    "08b0e27988598881d920a9e64f5615cd",
+  };
+  char * pt_192_cbc_dec[] = {
+    "6bc1bee22e409f96e93d7e117393172a", 
+    "ae2d8a571e03ac9c9eb76fac45af8e51", 
+    "30c81c46a35ce411e5fbc1191a0a52ef", 
+    "f69f2445df4f9b17ad2b417be66c3710", 
+  };
+
+  int i, b;
+  ByteStr * key, * iv;
+  ByteStr * pt[4], * ct[4], * pt_cmp[4];
+
+  SetMode(FIPS_AES_192);
+  key = HexString_To_Array ( key_192_cbc_dec );
+  iv = HexString_To_Array ( iv_192_cbc_dec );
+  for ( i = 0; i < 4; i += 1 ) {
+    ct[i] = HexString_To_Array ( ct_192_cbc_dec[i] );
+    pt_cmp[i] = HexString_To_Array ( pt_192_cbc_dec[i] );
+    pt[i] = AllocateByteStr ( 16 );
+  }
+  CBC_Reverse(iv, key, ct, pt, 4);
+  for ( i = 0; i < 4; i += 1 ) {
+    for ( b = 0; b < 16; b += 1 ) {
+      ASSERT ( pt[i]->raw[b] == pt_cmp[i]->raw[b], "Wrong ciphertext." );
+    }
+  }
+  for ( i = 0; i < 4; i += 1 ) {
+    free_bytestr(pt[i]);
+    free_bytestr(ct[i]);
+    free_bytestr(pt_cmp[i]);
+  }
+  free_bytestr(key);
+  free_bytestr(iv);
+}
+
 static void test_NIST_SP_800_38A_CBC_Enc_256 ( void ) {
   char * key_256_cbc_enc = "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
   char * iv_256_cbc_enc = "000102030405060708090a0b0c0d0e0f";
@@ -722,21 +808,6 @@ static void test_NIST_SP_800_38A_CBC_Enc_256 ( void ) {
     "9cfc4e967edb808d679f777bc6702c7d", 
     "39f23369a9d9bacfa530e26304231461", 
     "b2eb05e2c39be9fcda6c19078c6a9d1b", 
-  };
-
-  char * key_256_cbc_dec = "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
-  char * iv_256_cbc_dec = "000102030405060708090a0b0c0d0e0f";
-  char * ct_256_cbc_dec[] = {
-    "f58c4c04d6e5f1ba779eabfb5f7bfbd6",
-    "9cfc4e967edb808d679f777bc6702c7d",
-    "39f23369a9d9bacfa530e26304231461",
-    "b2eb05e2c39be9fcda6c19078c6a9d1b",
-  };
-  char * pt_256_cbc_dec[] = {
-    "6bc1bee22e409f96e93d7e117393172a",
-    "ae2d8a571e03ac9c9eb76fac45af8e51",
-    "30c81c46a35ce411e5fbc1191a0a52ef",
-    "f69f2445df4f9b17ad2b417be66c3710",
   };
 
   int i, b;
@@ -766,59 +837,44 @@ static void test_NIST_SP_800_38A_CBC_Enc_256 ( void ) {
   free_bytestr(iv);
 }
 
-static void test_NIST_SP_800_38A_CBC_Enc_192 ( void ) {
-  char * key_192_cbc_enc = "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
-  char * iv_192_cbc_enc = "000102030405060708090a0b0c0d0e0f";
-  char * pt_192_cbc_enc[] = {
-    "6bc1bee22e409f96e93d7e117393172a", 
-    "ae2d8a571e03ac9c9eb76fac45af8e51", 
-    "30c81c46a35ce411e5fbc1191a0a52ef", 
-    "f69f2445df4f9b17ad2b417be66c3710", 
+static void test_NIST_SP_800_38A_CBC_Dec_256 ( void ) {
+  char * key_256_cbc_dec = "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4";
+  char * iv_256_cbc_dec = "000102030405060708090a0b0c0d0e0f";
+  char * ct_256_cbc_dec[] = {
+    "f58c4c04d6e5f1ba779eabfb5f7bfbd6",
+    "9cfc4e967edb808d679f777bc6702c7d",
+    "39f23369a9d9bacfa530e26304231461",
+    "b2eb05e2c39be9fcda6c19078c6a9d1b",
   };
-  char * ct_192_cbc_enc[] = {
-    "4f021db243bc633d7178183a9fa071e8",
-    "b4d9ada9ad7dedf4e5e738763f69145a", 
-    "571b242012fb7ae07fa9baac3df102e0", 
-    "08b0e27988598881d920a9e64f5615cd",
-  };
-
-  char * key_192_cbc_dec = "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b";
-  char * iv_192_cbc_dec = "000102030405060708090a0b0c0d0e0f";
-  char * ct_192_cbc_dec[] = {
-    "4f021db243bc633d7178183a9fa071e8",
-    "b4d9ada9ad7dedf4e5e738763f69145a",
-    "571b242012fb7ae07fa9baac3df102e0",
-    "08b0e27988598881d920a9e64f5615cd",
-  };
-  char * pt_192_cbc_dec[] = {
-    "6bc1bee22e409f96e93d7e117393172a", 
-    "ae2d8a571e03ac9c9eb76fac45af8e51", 
-    "30c81c46a35ce411e5fbc1191a0a52ef", 
-    "f69f2445df4f9b17ad2b417be66c3710", 
+  char * pt_256_cbc_dec[] = {
+    "6bc1bee22e409f96e93d7e117393172a",
+    "ae2d8a571e03ac9c9eb76fac45af8e51",
+    "30c81c46a35ce411e5fbc1191a0a52ef",
+    "f69f2445df4f9b17ad2b417be66c3710",
   };
 
   int i, b;
   ByteStr * key, * iv;
-  ByteStr * pt[4], * ct[4], * ct_cmp[4];
+  ByteStr * pt[4], * ct[4], * pt_cmp[4];
 
-  SetMode(FIPS_AES_192);
-  key = HexString_To_Array ( key_192_cbc_enc );
-  iv = HexString_To_Array ( iv_192_cbc_enc );
+  SetMode(FIPS_AES_256);
+  key = HexString_To_Array ( key_256_cbc_dec );
+  iv = HexString_To_Array ( iv_256_cbc_dec );
   for ( i = 0; i < 4; i += 1 ) {
-    pt[i] = HexString_To_Array ( pt_192_cbc_enc[i] );
-    ct_cmp[i] = HexString_To_Array ( ct_192_cbc_enc[i] );
-    ct[i] = AllocateByteStr ( 16 );
+    ct[i] = HexString_To_Array ( ct_256_cbc_dec[i] );
+    pt_cmp[i] = HexString_To_Array ( pt_256_cbc_dec[i] );
+    pt[i] = AllocateByteStr ( 16 );
   }
-  CBC_Forward(iv, key, pt, ct, 4);
+  CBC_Reverse(iv, key, ct, pt, 4);
   for ( i = 0; i < 4; i += 1 ) {
     for ( b = 0; b < 16; b += 1 ) {
-      ASSERT ( ct[i]->raw[b] == ct[i]->raw[b], "Wrong ciphertext." );
+      ASSERT ( pt[i]->raw[b] == pt_cmp[i]->raw[b], "Wrong ciphertext." );
     }
   }
   for ( i = 0; i < 4; i += 1 ) {
     free_bytestr(pt[i]);
     free_bytestr(ct[i]);
-    free_bytestr(ct_cmp[i]);
+    free_bytestr(pt_cmp[i]);
   }
   free_bytestr(key);
   free_bytestr(iv);
@@ -1088,8 +1144,8 @@ void do_tests ( void )
   TEST ( test_NIST_SP_800_38A_ECB_Dec_192 );
   TEST ( test_NIST_SP_800_38A_ECB_Dec_256 );
   TEST ( test_NIST_SP_800_38A_CBC_Dec_128 );
-  // TEST ( test_NIST_SP_800_38A_CBC_Dec_192 );
-//   TEST ( test_NIST_SP_800_38A_CBC_Dec_256 );
+  TEST ( test_NIST_SP_800_38A_CBC_Dec_192 );
+  TEST ( test_NIST_SP_800_38A_CBC_Dec_256 );
   TEST ( test_HexString_To_Array );
 }
 
