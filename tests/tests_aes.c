@@ -1095,9 +1095,9 @@ static void test_HexString_To_Array ( void )
 
   free_bytestr(out);
  
-  out = HexString_To_Array("1");
+  out = HexString_To_Array("01");
   ASSERT ( out->length == 1, "Wrong length on single byte hex string." );
-  ASSERT ( out->raw[0] == 0x10, "Wrong value on single byte hex string." );
+  ASSERT ( out->raw[0] == 0x01, "Wrong value on single byte hex string." );
   free_bytestr ( out );
  
   out = HexString_To_Array("0");
